@@ -10,6 +10,7 @@ namespace AKStreamWeb.Misc
         private int _httpClientTimeoutSec;
         private bool _mediaServerFirstToRestart = true;
         private string _ormConnStr;
+        private string _mongoConnStr;
         private int _waitEventTimeOutMSec = 10000;
         private int _waitSipRequestTimeOutMSec = 5000;
         private ushort _webApiPort = 5800;
@@ -46,6 +47,16 @@ namespace AKStreamWeb.Misc
         {
             get => _ormConnStr;
             set => _ormConnStr = value;
+        }
+
+        /// <summary>
+        /// MongoDB连接串
+        /// </summary>
+        /// <value></value>
+        public string MongodbConnStr
+        {
+            get => _mongoConnStr;
+            set => _mongoConnStr = value;
         }
 
         /// <summary>

@@ -1,6 +1,9 @@
 using System;
+using System.Linq.Expressions;
 using LibCommon;
+using AKStreamWeb.Services;
 using LibCommon.Enums;
+using LibCommon.Structs;
 using LibCommon.Structs.DBModels;
 using LibCommon.Structs.GB28181;
 using LibCommon.Structs.GB28181.Sys;
@@ -8,6 +11,7 @@ using LibCommon.Structs.GB28181.XML;
 using LibGB28181SipServer;
 using LibLogger;
 using Newtonsoft.Json;
+using MongoDB.Driver;
 
 namespace AKStreamWeb.Misc
 {
@@ -36,8 +40,9 @@ namespace AKStreamWeb.Misc
             //设备注销时，要清掉在线流
             var sipDevice = JsonHelper.FromJson<SipDevice>(sipDeviceJson);
 
-            GCommon.Ldb.VideoOnlineInfo.DeleteMany(x => x.DeviceId.Equals(sipDevice.DeviceId));
-             GCommon.Logger.Info(
+            Expression<Func<VideoChannelMediaInfo, bool>> lanbda = (x => x.DeviceId.Equals(sipDevice.DeviceId));
+            GCommon.MongoDb.VideoOnlineInfo.DeleteMany(lanbda);
+            GCommon.Logger.Info(
                 $"[{Common.LoggerHead}]->设备注销->{sipDevice.RemoteEndPoint.Address.MapToIPv4().ToString()}-{sipDevice.DeviceId}->所有通道-->注销成功");
         }
 

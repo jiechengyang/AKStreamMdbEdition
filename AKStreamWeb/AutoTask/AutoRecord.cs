@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using AKStreamWeb.Services;
 using LibCommon;
@@ -8,6 +9,7 @@ using LibCommon.Structs;
 using LibCommon.Structs.DBModels;
 using LibCommon.Structs.WebRequest;
 using LibLogger;
+using MongoDB.Driver;
 
 namespace AKStreamWeb.AutoTask
 {
@@ -243,7 +245,8 @@ namespace AKStreamWeb.AutoTask
                     {
                         try
                         {
-                            var retlist = GCommon.Ldb.VideoOnlineInfo.FindAll().ToList();
+                            Expression<Func<VideoChannelMediaInfo, bool>> lanbda = (x => 1 == 1);
+                            var retlist = GCommon.MongoDb.VideoOnlineInfo.Find(lanbda).ToList();
                             foreach (var obj in retlist)
                             {
                                 if (obj != null && obj.MediaServerStreamInfo != null)

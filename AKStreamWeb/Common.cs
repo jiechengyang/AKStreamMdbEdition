@@ -154,7 +154,8 @@ namespace AKStreamWeb
 #endif
             try
             {
-                GCommon.Ldb.VideoOnlineInfo.DeleteAll();
+                GCommon.InitMongoDb(AkStreamWebConfig.MongodbConnStr);
+                VideoHelper.ClearVideoOnlineChannels();
                 OrmHelper = new ORMHelper(AkStreamWebConfig.OrmConnStr, AkStreamWebConfig.DbType);
             }
             catch (Exception ex)

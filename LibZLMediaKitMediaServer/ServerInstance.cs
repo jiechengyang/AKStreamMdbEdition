@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Timers;
 using LibCommon;
 using LibCommon.Structs;
 using LibZLMediaKitMediaServer.Structs.WebHookRequest;
 using LibZLMediaKitMediaServer.Structs.WebResponse.ZLMediaKit;
 using Newtonsoft.Json;
+using MongoDB.Driver;
 
 namespace LibZLMediaKitMediaServer
 {
@@ -331,9 +333,9 @@ namespace LibZLMediaKitMediaServer
 
             if (!_isKeeperRunning && !_isMediaServerRunning)
             {
-                GCommon.Ldb.VideoOnlineInfo.DeleteMany(x =>
-                  x.MediaServerId.Equals(this.MediaServerId)); //清除所有在线视频流
-                
+                //清除所有在线视频流
+                Expression<Func<VideoChannelMediaInfo, bool>> lanbda = (x => x.MediaServerId.Equals(this.MediaServerId));
+                GCommon.MongoDb.VideoOnlineInfo.DeleteMany(lanbda);
                 Dispose();
               
             }

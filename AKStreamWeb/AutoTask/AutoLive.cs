@@ -1,8 +1,12 @@
+using System;
 using System.Threading;
 using AKStreamWeb.Services;
+using System.Linq.Expressions;
 using LibCommon;
 using LibCommon.Structs.DBModels;
 using LibLogger;
+using MongoDB.Driver;
+using LibCommon.Structs;
 
 namespace AKStreamWeb.AutoTask
 {
@@ -34,8 +38,8 @@ namespace AKStreamWeb.AutoTask
                     {
                         foreach (var obj in dbRet)
                         {
-                            var listRet = GCommon.Ldb.VideoOnlineInfo.FindOne(x =>
-                                x.MainId.Equals(obj.MainId) && x.MediaServerId.Equals(obj.MediaServerId));
+                            Expression<Func<VideoChannelMediaInfo, bool>> lanbda = (x => x.MainId.Equals(obj.MainId) && x.MediaServerId.Equals(obj.MediaServerId));
+                            var listRet = GCommon.MongoDb.VideoOnlineInfo.Find(lanbda).FirstOrDefault();
                             if (obj != null && obj.AutoVideo.Equals(true) && obj.NoPlayerBreak.Equals(false) &&
                                 obj.Enabled.Equals(true))
                             {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading;
 using LibCommon;
 using LibCommon.Enums;
@@ -14,6 +15,7 @@ using LibLogger;
 using LibZLMediaKitMediaServer;
 using LibZLMediaKitMediaServer.Structs.WebHookRequest;
 using LibZLMediaKitMediaServer.Structs.WebRequest.ZLMediaKit;
+using MongoDB.Driver;
 
 namespace AKStreamWeb.Services
 {
@@ -268,9 +270,9 @@ namespace AKStreamWeb.Services
 
             VideoChannelMediaInfo mediaInfo = null;
 
-            mediaInfo = GCommon.Ldb.VideoOnlineInfo.FindOne(x =>
-                x.MainId.Equals(record.Stream) && x.MediaServerId.Equals(videoChannel.MediaServerId));
-
+            Expression<Func<VideoChannelMediaInfo, bool>> lanbda = (x =>
+            x.MainId.Equals(record.Stream) && x.MediaServerId.Equals(videoChannel.MediaServerId));
+            mediaInfo = GCommon.MongoDb.VideoOnlineInfo.Find(lanbda).FirstOrDefault();
 
             if (mediaInfo == null || mediaInfo.MediaServerStreamInfo == null)
             {
@@ -280,10 +282,7 @@ namespace AKStreamWeb.Services
                 return true;
             }
 
-
-            GCommon.Ldb.VideoOnlineInfo.DeleteMany(x =>
-                x.MainId.Equals(record.Stream) && x.MediaServerId.Equals(videoChannel.MediaServerId));
-
+            GCommon.MongoDb.VideoOnlineInfo.DeleteMany(lanbda);
 
             try
             {
@@ -371,9 +370,10 @@ namespace AKStreamWeb.Services
             VideoChannelMediaInfo mediaInfo = null;
 
 
-            mediaInfo = GCommon.Ldb.VideoOnlineInfo.FindOne(x =>
-                x.MainId.Equals(videoChannel.MainId) && x.MediaServerId.Equals(videoChannel.MediaServerId));
 
+            Expression<Func<VideoChannelMediaInfo, bool>> lanbda = (x =>
+                x.MainId.Equals(videoChannel.MainId) && x.MediaServerId.Equals(videoChannel.MediaServerId));
+            mediaInfo = GCommon.MongoDb.VideoOnlineInfo.Find(lanbda).FirstOrDefault();
 
             if (mediaInfo == null || mediaInfo.MediaServerStreamInfo == null)
             {
@@ -485,8 +485,9 @@ namespace AKStreamWeb.Services
             }
 
             VideoChannelMediaInfo mediaInfo = null;
-            mediaInfo = GCommon.Ldb.VideoOnlineInfo.FindOne(x =>
+            Expression<Func<VideoChannelMediaInfo, bool>> lanbda = (x =>
                 x.MainId.Equals(record.Stream) && x.MediaServerId.Equals(videoChannel.MediaServerId));
+            mediaInfo = GCommon.MongoDb.VideoOnlineInfo.Find(lanbda).FirstOrDefault();
 
 
             if (mediaInfo != null && mediaInfo.MediaServerStreamInfo != null)
@@ -712,11 +713,9 @@ namespace AKStreamWeb.Services
                  GCommon.Logger.Warn(
                     $"[{Common.LoggerHead}]->请求Sip推回放流失败->{record.SipDevice.DeviceId}-{record.SipChannel.DeviceId}-{record.Stream}->{JsonHelper.ToJson(rs)}");
 
-
-                GCommon.Ldb.VideoOnlineInfo.DeleteMany(x =>
-                    x.MainId.Equals(record.Stream) && x.MediaServerId.Equals(videoChannel.MediaServerId));
-
-
+                Expression<Func<VideoChannelMediaInfo, bool>> delLanbda2 = (x =>
+   x.MainId.Equals(record.Stream) && x.MediaServerId.Equals(videoChannel.MediaServerId));
+                GCommon.MongoDb.VideoOnlineInfo.DeleteMany(delLanbda2);
                 return null;
             }
 
@@ -835,13 +834,13 @@ namespace AKStreamWeb.Services
                 $"ws://{mediaServer.IpV4Address}:{mediaServer.HttpPort}/{onPublishWebhook.App}/{onPublishWebhook.Stream}.live.mp4{exInfo}");
 
 
-            GCommon.Ldb.VideoOnlineInfo.DeleteMany(x =>
+            Expression<Func<VideoChannelMediaInfo, bool>> delLanbda3 = (x =>
                 x.MainId.Equals(record.Stream) && x.MediaServerId.Equals(videoChannel.MediaServerId));
+            GCommon.MongoDb.VideoOnlineInfo.DeleteMany(delLanbda3);
+            GCommon.MongoDb.VideoOnlineInfo.InsertOne(videoChannelMediaInfo);
 
-            GCommon.Ldb.VideoOnlineInfo.Insert(videoChannelMediaInfo);
 
-
-             GCommon.Logger.Debug(
+            GCommon.Logger.Debug(
                 $"[{Common.LoggerHead}]->请求Sip推回放流成功->{record.SipDevice.DeviceId}-{record.SipChannel.DeviceId}-{record.Stream}->{JsonHelper.ToJson(videoChannelMediaInfo.MediaServerStreamInfo)}");
 
             return videoChannelMediaInfo.MediaServerStreamInfo;
@@ -879,9 +878,9 @@ namespace AKStreamWeb.Services
             VideoChannelMediaInfo mediaInfo = null;
 
 
-            mediaInfo = GCommon.Ldb.VideoOnlineInfo.FindOne(x =>
+            Expression<Func<VideoChannelMediaInfo, bool>> lanbda = (x =>
                 x.MainId.Equals(videoChannel.MainId) && x.MediaServerId.Equals(videoChannel.MediaServerId));
-
+            mediaInfo = GCommon.MongoDb.VideoOnlineInfo.Find(lanbda).FirstOrDefault();
 
             if (mediaInfo != null && mediaInfo.MediaServerStreamInfo != null)
             {
@@ -1111,9 +1110,9 @@ namespace AKStreamWeb.Services
                  GCommon.Logger.Warn($"[{Common.LoggerHead}]->请求Sip推流失败->{deviceId}-{channelId}->{JsonHelper.ToJson(rs)}");
 
 
-                GCommon.Ldb.VideoOnlineInfo.DeleteMany(x =>
+                Expression<Func<VideoChannelMediaInfo, bool>> delLanbda = (x =>
                     x.MainId.Equals(videoChannel.MainId) && x.MediaServerId.Equals(videoChannel.MediaServerId));
-
+                GCommon.MongoDb.VideoOnlineInfo.DeleteMany(delLanbda);
 
                 return null;
             }
@@ -1230,14 +1229,11 @@ namespace AKStreamWeb.Services
             videoChannelMediaInfo.MediaServerStreamInfo.PlayUrl.Add(
                 $"ws://{mediaServer.IpV4Address}:{mediaServer.HttpPort}/{onPublishWebhook.App}/{onPublishWebhook.Stream}.live.mp4{exInfo}");
 
-
-            GCommon.Ldb.VideoOnlineInfo.DeleteMany(x =>
+            Expression<Func<VideoChannelMediaInfo, bool>> delLanbda2 = (x =>
                 x.MainId.Equals(videoChannel.MainId) && x.MediaServerId.Equals(videoChannel.MediaServerId));
+            GCommon.MongoDb.VideoOnlineInfo.DeleteMany(delLanbda2);
 
-            GCommon.Ldb.VideoOnlineInfo.Insert(videoChannelMediaInfo);
-
-
-             GCommon.Logger.Debug(
+            GCommon.Logger.Debug(
                 $"[{Common.LoggerHead}]->请求Sip推流成功->{deviceId}-{channelId}->{JsonHelper.ToJson(videoChannelMediaInfo.MediaServerStreamInfo)}");
 
             return videoChannelMediaInfo.MediaServerStreamInfo;
@@ -1298,8 +1294,8 @@ namespace AKStreamWeb.Services
 
              GCommon.Logger.Info(
                 $"[{Common.LoggerHead}]->检查Sip推流状态成功->{deviceId}-{channelId}->{JsonHelper.ToJson(tmpSipChannel.PushStatus)}");
-
-            var obj = GCommon.Ldb.VideoOnlineInfo.FindOne(x => x.MainId.Equals(tmpSipChannel.Stream));
+            Expression<Func<VideoChannelMediaInfo, bool>> lanbda = (x => x.MainId.Equals(tmpSipChannel.Stream));
+            var obj = GCommon.MongoDb.VideoOnlineInfo.Find(lanbda).FirstOrDefault();
             if (obj != null && obj.MediaServerStreamInfo != null)
             {
                 return true;
@@ -1553,8 +1549,8 @@ namespace AKStreamWeb.Services
                 return false;
             }
 
-            var vBack = GCommon.Ldb.VideoOnlineInfo.FindOne(x => x.MediaServerStreamInfo.Ssrc == ssrcId);
-
+            Expression<Func<VideoChannelMediaInfo, bool>> lanbda = (x => x.MediaServerStreamInfo.Ssrc == ssrcId);
+            var vBack = GCommon.MongoDb.VideoOnlineInfo.Find(lanbda).FirstOrDefault();
             ResMediaServerOpenRtpPort openRtpPort;
             openRtpPort = new ResMediaServerOpenRtpPort()
             {

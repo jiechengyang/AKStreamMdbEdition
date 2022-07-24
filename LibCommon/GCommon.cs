@@ -15,7 +15,8 @@ namespace LibCommon
     {
         private static string _outConfigPath = "";
         private static string _outLogPath = "";
-        private static LiteDBHelper _ldb = new LiteDBHelper();
+        private static LiteDBHelper _ldb = new LiteDBHelper();// TODO: 可以取消掉
+        private static MongoDBHelper _mdb;
         private static List<VideoChannelRecordInfo> _videoChannelRecordInfo = new List<VideoChannelRecordInfo>();
         public static string BaseStartPath = Environment.CurrentDirectory; //程序启动的目录
 
@@ -95,6 +96,17 @@ namespace LibCommon
         {
             get => _ldb;
             set => _ldb = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        public static MongoDBHelper MongoDb
+        {
+            get => _mdb;
+            set => _mdb = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        public static void InitMongoDb(string connStr)
+        {
+            _mdb = new MongoDBHelper(connStr);
         }
 
         public static List<VideoChannelRecordInfo> VideoChannelRecordInfo
