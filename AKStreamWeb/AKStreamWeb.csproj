@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <LangVersion>default</LangVersion>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DocumentationFile>bin\Debug\net6.0\AKStreamWeb.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DocumentationFile>bin\Release\net5.0\AKStreamWeb.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\LibCommon\LibCommon.csproj" />
+      <ProjectReference Include="..\LibGB28181SipClient\LibGB28181SipClient.csproj" />
+      <ProjectReference Include="..\LibGB28181SipServer\LibGB28181SipServer.csproj" />
+      <ProjectReference Include="..\LibSystemInfo\LibSystemInfo.csproj" />
+      <ProjectReference Include="..\LibZLMediaKitMediaServer\LibZLMediaKitMediaServer.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.10" />
+      <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.2" />
+      <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.2.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Config\AKStreamWeb.json" />
+      <_ContentIncludedByDefault Remove="Config\SipServerConfig.json" />
+      <_ContentIncludedByDefault Remove="Views\Home\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Home\Privacy.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Shared\Error.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Shared\_Layout.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Shared\_ValidationScriptsPartial.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\_ViewImports.cshtml" />
+    </ItemGroup>
+
+</Project>

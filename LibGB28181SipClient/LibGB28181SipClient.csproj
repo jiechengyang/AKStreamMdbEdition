@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <LangVersion>default</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\LibCommon\LibCommon.csproj" />
+      <ProjectReference Include="..\LibSystemInfo\LibSystemInfo.csproj" />
+      <ProjectReference Include="..\SipSorcery\SIPSorcery.csproj" />
+    </ItemGroup>
+
+</Project>
